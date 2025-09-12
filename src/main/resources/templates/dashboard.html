@@ -1,13 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-    com.app.fitfuel.entity.User loggedInUser = (com.app.fitfuel.entity.User) session.getAttribute("loggedInUser");
-    if (loggedInUser == null) {
-        response.sendRedirect(request.getContextPath() + "/login");
-        return;
-    }
-%>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,6 +34,11 @@
         }
         #nav img {
             height: 125px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            align-items: center;
         }
         #nav h4 {
             text-transform: uppercase;
@@ -89,6 +86,7 @@
             flex-direction: column;
             text-align: center;
             z-index: 10;
+            padding: 0 20px;
         }
         #page1 h1 {
             font-size: 80px;
@@ -230,13 +228,13 @@
             cursor: pointer;
         }
         #card1 {
-            background-image: url(${pageContext.request.contextPath}/card1.jpg);
+            background-image: url(/card1.jpg);
         }
         #card2 {
-            background-image: url(${pageContext.request.contextPath}/card2.jpg);
+            background-image: url(/card2.jpg);
         }
         #card3 {
-            background-image: url(${pageContext.request.contextPath}/card3.jpg);
+            background-image: url(/card3.jpg);
         }
         .overlay {
             height: 100%;
@@ -287,6 +285,7 @@
             align-items: center;
             justify-content: space-between;
             background: linear-gradient(to left bottom, #119f3a, #ace022);
+            padding: 0 20px;
         }
         #green-div h4 {
             width: 45%;
@@ -310,6 +309,7 @@
             align-items: center;
             position: relative;
             justify-content: center;
+            padding: 0 20px;
         }
         #page3 > p {
             font-size: 35px;
@@ -375,7 +375,7 @@
             scale: 1;
         }
         #page4 h1 {
-            font-size: 108px !important;
+            font-size: 92px !important;
             position: absolute;
             top: -15%;
             font-weight: 900;
@@ -388,7 +388,7 @@
             transform: translateX(-50%);
         }
         #page4 h1 {
-            font-size: 6.4vw;
+            font-size: 5vw;
             position: absolute;
             top: -15%;
             font-weight: 900;
@@ -449,17 +449,460 @@
             line-height: 20px;
             margin-bottom: 8px;
         }
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 5px;
+        }
+        .mobile-menu-toggle span {
+            width: 25px;
+            height: 3px;
+            background-color: #fff;
+            margin: 3px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+
+        /* SUCCESS POPUP STYLES */
+        .success-popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .success-popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .success-popup {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            transform: scale(0.8) translateY(50px);
+            transition: all 0.3s ease;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+        }
+
+        .success-popup-overlay.show .success-popup {
+            transform: scale(1) translateY(0);
+        }
+
+        .success-popup .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .success-popup .close-btn:hover {
+            color: #95c11e;
+            transform: scale(1.1);
+        }
+
+        .success-popup .success-icon {
+            font-size: 60px;
+            color: #95c11e;
+            margin-bottom: 20px;
+            animation: bounce 0.6s ease;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        .success-popup h2 {
+            color: #95c11e;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .success-popup p {
+            color: #fff;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .success-popup .calorie-highlight {
+            color: #95c11e;
+            font-size: 32px;
+            font-weight: 900;
+            margin: 15px 0;
+            text-shadow: 0 0 10px rgba(149, 193, 30, 0.3);
+        }
+
+        .success-popup .continue-btn {
+            background: linear-gradient(135deg, #95c11e, #7da018);
+            color: #000;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .success-popup .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(149, 193, 30, 0.3);
+            background: linear-gradient(135deg, #a8d424, #95c11e);
+        }
+
+        /* Mobile Responsive Styles */
+        @media screen and (max-width: 768px) {
+            /* Hide cursor effects on mobile */
+            #cursor, #cursor-blur {
+                display: none;
+            }
+            /* Navigation */
+            #nav {
+                padding: 0 20px;
+                height: 70px;
+                justify-content: space-between;
+            }
+            #nav img {
+                height: 80px;
+                z-index: 100;
+            }
+            /* Mobile menu */
+            .mobile-menu-toggle {
+                display: flex;
+                z-index: 101;
+            }
+            .nav-links {
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                height: 0;
+                background: rgba(0, 0, 0, 0.95);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                gap: 0;
+                overflow: hidden;
+                transition: height 0.3s ease;
+            }
+            .nav-links.active {
+                height: 280px;
+            }
+            #nav h4, #logout-btn {
+                width: 100%;
+                text-align: center;
+                padding: 20px;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                margin: 0;
+            }
+            /* Page 1 */
+            #page1 {
+                padding: 0 20px;
+                padding-top: 70px;
+            }
+            #page1 h1 {
+                font-size: 40px;
+            }
+            #page1 h1::before {
+                font-size: 40px;
+            }
+            #page1 h2 {
+                font-size: 24px;
+            }
+            #page1 p {
+                font-size: 16px;
+                width: 90%;
+            }
+            /* Scroller */
+            #scroller h4 {
+                font-size: 60px;
+            }
+            /* About Us */
+            #about-us {
+                flex-direction: column;
+                height: auto;
+                padding: 40px 20px;
+                gap: 30px;
+            }
+            #about-us img {
+                height: 150px;
+                width: 150px;
+            }
+            #about-us-in {
+                width: 100%;
+            }
+            #about-us-in h3 {
+                font-size: 36px;
+            }
+            #about-us-in p {
+                font-size: 16px;
+                line-height: 24px;
+            }
+            /* Cards Container */
+            #cards-container {
+                flex-direction: column;
+                height: auto;
+                gap: 30px;
+                padding: 40px 20px;
+            }
+            .card {
+                width: 100%;
+                height: 250px;
+            }
+            .overlay {
+                padding: 20px;
+                padding-top: 80px;
+            }
+            .overlay h4 {
+                font-size: 24px;
+                white-space: normal;
+            }
+            .overlay p {
+                font-size: 16px;
+            }
+            /* Green Div */
+            #green-div {
+                flex-direction: column;
+                height: auto;
+                padding: 30px 20px;
+                text-align: center;
+            }
+            #green-div h4 {
+                width: 100%;
+                font-size: 20px;
+                line-height: 32px;
+                margin: 20px 0;
+            }
+            #green-div img {
+                width: 50px;
+                height: 50px;
+            }
+            /* Page 3 */
+            #page3 {
+                padding: 0 30px;
+            }
+            #page3 > p {
+                font-size: 24px;
+                width: 100%;
+                line-height: 34px;
+            }
+            #page3 #colon1 {
+                left: 5%;
+                top: 20%;
+                height: 40px;
+            }
+            #page3 #colon2 {
+                bottom: 25%;
+                right: 5%;
+                height: 40px;
+            }
+            /* Page 4 */
+            #page4 {
+                flex-direction: column;
+                height: auto;
+                gap: 30px;
+                padding: 60px 20px 40px;
+                margin-top: 0;
+            }
+            #page4 h1 {
+                position: static !important;
+                font-size: 32px !important;
+                margin-bottom: 40px;
+                text-align: center;
+                white-space: normal !important;
+                transform: none !important;
+                left: auto !important;
+                width: 100%;
+                line-height: 1.3;
+                -webkit-text-stroke: 1px #fff !important;
+                top: auto !important;
+            }
+            .elem {
+                width: 100%;
+                height: 200px;
+            }
+            .elem h2 {
+                font-size: 32px;
+            }
+            /* Footer */
+            #footer {
+                flex-direction: column;
+                height: auto;
+                padding: 40px 20px;
+                gap: 30px;
+                text-align: center;
+            }
+            #footer > img {
+                display: none;
+            }
+            #f2 h3, #f3 h3 {
+                font-size: 18px;
+                margin-bottom: 15px;
+            }
+            #f4 h4 {
+                font-size: 14px;
+                white-space: normal;
+                line-height: 24px;
+            }
+
+            /* Mobile popup styles */
+            .success-popup {
+                padding: 30px 20px;
+                max-width: 350px;
+            }
+
+            .success-popup h2 {
+                font-size: 24px;
+            }
+
+            .success-popup .calorie-highlight {
+                font-size: 28px;
+            }
+
+            .success-popup p {
+                font-size: 14px;
+            }
+        }
+        /* Tablet Responsive Styles */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            #nav {
+                padding: 0 50px;
+            }
+            #nav img {
+                height: 100px;
+            }
+            #nav h4 {
+                font-size: 12px;
+            }
+            #page1 h1 {
+                font-size: 60px;
+            }
+            #page1 h2 {
+                font-size: 26px;
+            }
+            #page1 p {
+                font-size: 18px;
+                width: 60%;
+            }
+            #scroller h4 {
+                font-size: 80px;
+            }
+            #about-us {
+                padding: 0 30px;
+            }
+            #about-us img {
+                height: 180px;
+                width: 180px;
+            }
+            #about-us-in h3 {
+                font-size: 42px;
+            }
+            #about-us-in p {
+                font-size: 18px;
+            }
+            #cards-container {
+                gap: 40px;
+            }
+            .card {
+                width: 30%;
+            }
+            #green-div h4 {
+                font-size: 22px;
+                line-height: 36px;
+            }
+            #page3 > p {
+                font-size: 28px;
+                width: 80%;
+            }
+            #footer {
+                padding: 0 50px;
+            }
+        }
     </style>
 </head>
 <body>
-<div id="nav">
-    <img src="${pageContext.request.contextPath}/logo1.png" alt="">
-    <h4><a href="/set-goal">Set Goal</a></h4>
-    <h4><a href="/user-track-nutrition">Track Nutrition</a></h4>
-    <h4><a href="/analytics">Analysis</a></h4>
-    <h4 id="logout-btn" onclick="window.location.href='/logout'">Logout</h4>
+<!-- Thymeleaf: Check for loggedInUser in session -->
+<div th:if="${session.loggedInUser == null}">
+    <script th:inline="javascript">
+        window.location.href = /*[[@{/login}]]*/;
+    </script>
 </div>
-<video autoplay loop muted src="${pageContext.request.contextPath}/bg1.mp4"></video>
+
+<!-- Success Popup -->
+<div class="success-popup-overlay" id="successPopup" th:if="${goalSuccess}">
+    <div class="success-popup">
+        <button class="close-btn" onclick="closeSuccessPopup()">&times;</button>
+        <div class="success-icon">✅</div>
+        <h2>Goal Set Successfully!</h2>
+        <p>Your daily goal has been calculated successfully.</p>
+        <div class="calorie-highlight" th:text="${dailyCalorieGoal} + ' kcal'">0 kcal</div>
+        <p>Start tracking your nutrition and reach your fitness goals!</p>
+        <button class="continue-btn" onclick="closeSuccessPopup()">Continue</button>
+    </div>
+</div>
+
+<div id="nav">
+    <!-- Thymeleaf: Use @{...} for context-relative URLs -->
+    <img th:src="@{/logo1.png}" alt="">
+    <!-- Mobile menu toggle -->
+    <div class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+    <!-- Navigation items -->
+    <div class="nav-links">
+        <h4><a th:href="@{/set-goal}">Set Goal</a></h4>
+        <h4><a th:href="@{/user-track-nutrition}">Track Nutrition</a></h4>
+        <h4><a th:href="@{/analytics}">Analysis</a></h4>
+        <h4 id="logout-btn" onclick="window.location.href='logout'">Logout</h4>
+    </div>
+</div>
+<video autoplay loop muted>
+    <source th:src="@{/bg1.mp4}" type="video/mp4">
+</video>
 <div id="cursor"></div>
 <div id="cursor-blur"></div>
 <div id="main">
@@ -488,17 +931,19 @@
             </div>
         </div>
         <div id="about-us">
-            <img src="${pageContext.request.contextPath}/add2.jpg" alt="" />
+            <!-- Thymeleaf: Use @{...} for context-relative URLs -->
+            <img th:src="@{/add2.jpg}" alt="" />
             <div id="about-us-in">
                 <h3>ABOUT US</h3>
                 <p>
                     FitFuel is a smart fitness companion that helps you set personalized goals, track your daily nutrition, and analyze your progress. We make healthy living simple, effective, and accessible for everyone.
                 </p>
             </div>
-            <img src="${pageContext.request.contextPath}/add1.jpg" alt="" />
+            <img th:src="@{/add1.jpg}" alt="" />
         </div>
         <div id="cards-container">
-            <div class="card" id="card1" onclick="window.location.href='/set-goal'">
+            <!-- Thymeleaf: Use @{...} for navigation -->
+            <div class="card" id="card1" onclick="window.location.href='set-goal'">
                 <div class="overlay">
                     <h4>SET GOAL</h4>
                     <p>
@@ -506,7 +951,7 @@
                     </p>
                 </div>
             </div>
-            <div class="card" id="card2" onclick="window.location.href='/user-track-nutrition'">
+            <div class="card" id="card2" onclick="window.location.href='user-track-nutrition'">
                 <div class="overlay">
                     <h4>TRACK NUTRITION</h4>
                     <p>
@@ -514,7 +959,7 @@
                     </p>
                 </div>
             </div>
-            <div class="card" id="card3" onclick="window.location.href='/analytics'">
+            <div class="card" id="card3" onclick="window.location.href='analytics'">
                 <div class="overlay">
                     <h4>ANALYSIS</h4>
                     <p>
@@ -542,15 +987,16 @@
         <h1>WHAT ARE YOU WAITING FOR?</h1>
         <div class="elem">
             <h2>MOVE</h2>
-            <img src="${pageContext.request.contextPath}/c1.jpg" alt="" />
+            <!-- Thymeleaf: Use @{...} for context-relative URLs -->
+            <img th:src="@{/c1.jpg}" alt="" />
         </div>
         <div class="elem">
             <h2>FUEL</h2>
-            <img src="${pageContext.request.contextPath}/c2.jpg" alt="" />
+            <img th:src="@{/c2.jpg}" alt="" />
         </div>
         <div class="elem">
             <h2>GROW</h2>
-            <img src="${pageContext.request.contextPath}/c3.jpg" alt="" />
+            <img th:src="@{/c3.jpg}" alt="" />
         </div>
     </div>
     <div id="footer">
@@ -577,33 +1023,78 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.1/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.1/ScrollTrigger.min.js"></script>
 <script>
+    // Success Popup Functions
+    function showSuccessPopup() {
+        const popup = document.getElementById('successPopup');
+        if (popup) {
+            popup.classList.add('show');
+        }
+    }
+
+    function closeSuccessPopup() {
+        const popup = document.getElementById('successPopup');
+        if (popup) {
+            popup.classList.remove('show');
+        }
+    }
+
+    // Show popup on page load if goal was set successfully
+    document.addEventListener('DOMContentLoaded', function() {
+        const popup = document.getElementById('successPopup');
+        if (popup) {
+            setTimeout(() => {
+                showSuccessPopup();
+            }, 500); // Small delay for better UX
+
+            // Auto close after 5 seconds
+            setTimeout(() => {
+                closeSuccessPopup();
+            }, 5500);
+        }
+    });
+
+    // Close popup when clicking outside
+    document.addEventListener('click', function(e) {
+        const popup = document.getElementById('successPopup');
+        if (popup && e.target === popup) {
+            closeSuccessPopup();
+        }
+    });
+
+    // Mobile menu toggle function
+    function toggleMobileMenu() {
+        const navLinks = document.querySelector('.nav-links');
+        navLinks.classList.toggle('active');
+    }
     var crsr = document.querySelector("#cursor");
     var blur = document.querySelector("#cursor-blur");
-    document.addEventListener("mousemove", function (dets) {
-        crsr.style.left = dets.x + "px";
-        crsr.style.top = dets.y + "px";
-        blur.style.left = dets.x - 250 + "px";
-        blur.style.top = dets.y - 250 + "px";
-    });
-
-    var h4all = document.querySelectorAll("#nav h4");
-    h4all.forEach(function (elem) {
-        elem.addEventListener("mouseenter", function () {
-            crsr.style.scale = 3;
-            crsr.style.border = "1px solid #fff";
-            crsr.style.backgroundColor = "transparent";
+    // Only add cursor effects on desktop
+    if (window.innerWidth > 768) {
+        document.addEventListener("mousemove", function (dets) {
+            crsr.style.left = dets.x + "px";
+            crsr.style.top = dets.y + "px";
+            blur.style.left = dets.x - 250 + "px";
+            blur.style.top = dets.y - 250 + "px";
         });
-        elem.addEventListener("mouseleave", function () {
-            crsr.style.scale = 1;
-            crsr.style.border = "0px solid #95C11E";
-            crsr.style.backgroundColor = "#95C11E";
+        var h4all = document.querySelectorAll("#nav h4");
+        h4all.forEach(function (elem) {
+            elem.addEventListener("mouseenter", function () {
+                crsr.style.scale = 3;
+                crsr.style.border = "1px solid #fff";
+                crsr.style.backgroundColor = "transparent";
+            });
+            elem.addEventListener("mouseleave", function () {
+                crsr.style.scale = 1;
+                crsr.style.border = "0px solid #95C11E";
+                crsr.style.backgroundColor = "#95C11E";
+            });
         });
-    });
-
+    }
+    // GSAP Animations
     gsap.to("#nav", {
         backgroundColor: "#000",
         duration: 0.5,
-        height: "110px",
+        height: window.innerWidth <= 768 ? "70px" : "110px",
         scrollTrigger: {
             trigger: "#nav",
             scroller: "body",
@@ -612,7 +1103,6 @@
             scrub: 1,
         },
     });
-
     gsap.to("#main", {
         backgroundColor: "#000",
         scrollTrigger: {
@@ -623,7 +1113,6 @@
             scrub: 2,
         },
     });
-
     gsap.from("#about-us img, #about-us-in", {
         y: 90,
         opacity: 0,
@@ -636,7 +1125,6 @@
             scrub: 1,
         },
     });
-
     gsap.from("#colon1", {
         y: -70,
         x: -70,
@@ -648,7 +1136,6 @@
             scrub: 4,
         },
     });
-
     gsap.from("#colon2", {
         y: 70,
         x: 70,
@@ -660,7 +1147,6 @@
             scrub: 4,
         },
     });
-
     gsap.from("#page4 h1", {
         y: 50,
         scrollTrigger: {
@@ -670,6 +1156,18 @@
             end: "top 70%",
             scrub: 3,
         },
+    });
+    // Close mobile menu when clicking on nav links
+    document.querySelectorAll('#nav h4 a, #logout-btn').forEach(link => {
+        link.addEventListener('click', () => {
+            document.querySelector('.nav-links').classList.remove('active');
+        });
+    });
+    // Handle window resize to reset mobile menu
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768) {
+            document.querySelector('.nav-links').classList.remove('active');
+        }
     });
 </script>
 </body>

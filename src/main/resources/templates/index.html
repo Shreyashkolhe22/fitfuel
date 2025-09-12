@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitFuel - Welcome</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: #000;
+            color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .overlay {
+            background: rgba(0, 0, 0, 0.65);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .container {
+            text-align: center;
+            width: 100%;
+            max-width: 600px;
+            padding: 40px 30px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 1.2s ease-in-out;
+            border: 2px solid rgba(149, 193, 30, 0.3);
+            margin: auto;
+        }
+
+        .logo {
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+            max-width: 100%;
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 2.8rem);
+            margin-bottom: 10px;
+            color: #F5F5F5;
+            font-weight: 900;
+            line-height: 1.2;
+        }
+
+        .brand {
+            color: #95c11e;
+        }
+
+        p {
+            font-size: clamp(1rem, 3vw, 1.2rem);
+            margin-bottom: 25px;
+            color: #E0E0E0;
+            line-height: 1.4;
+        }
+
+        .quote {
+            font-style: italic;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+            margin-bottom: 30px;
+            color: #95c11e;
+            animation: fadeInUp 2s ease-in-out;
+            line-height: 1.5;
+        }
+
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 28px;
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            background-color: transparent;
+            color: #95c11e;
+            border: 2px solid #95c11e;
+            min-width: 120px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #95c11e;
+            color: #000;
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            border: 2px solid #F5F5F5;
+            color: #F5F5F5;
+        }
+
+        .btn-secondary:hover {
+            background-color: #F5F5F5;
+            color: #000;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile-specific styles */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 30px 20px;
+                border-radius: 15px;
+            }
+
+            .logo {
+                width: 100px;
+                margin-bottom: 15px;
+            }
+
+            h1 {
+                margin-bottom: 15px;
+            }
+
+            p {
+                margin-bottom: 20px;
+            }
+
+            .quote {
+                margin-bottom: 25px;
+            }
+
+            .btn-group {
+                gap: 12px;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                padding: 14px 32px;
+                width: 100%;
+                max-width: 250px;
+            }
+        }
+
+        /* Small mobile devices */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 25px 15px;
+                border-radius: 12px;
+            }
+
+            .logo {
+                width: 80px;
+                margin-bottom: 12px;
+            }
+
+            h1 {
+                margin-bottom: 12px;
+            }
+
+            p {
+                margin-bottom: 18px;
+            }
+
+            .quote {
+                margin-bottom: 22px;
+            }
+
+            .btn {
+                padding: 12px 24px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Large screens */
+        @media (min-width: 1200px) {
+            .container {
+                padding: 50px 40px;
+                max-width: 700px;
+            }
+
+            .logo {
+                width: 140px;
+                margin-bottom: 25px;
+            }
+
+            .btn-group {
+                gap: 20px;
+            }
+
+            .btn {
+                padding: 15px 35px;
+            }
+        }
+
+        /* Landscape orientation on mobile */
+        @media (max-height: 600px) and (orientation: landscape) {
+            body {
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+
+            .container {
+                margin-top: 0;
+                padding: 20px;
+            }
+
+            .logo {
+                width: 60px;
+                margin-bottom: 8px;
+            }
+
+            h1, p, .quote {
+                margin-bottom: 10px;
+            }
+
+            .btn-group {
+                margin-top: 15px;
+            }
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            .container, .quote {
+                animation: none;
+            }
+
+            .btn:hover {
+                transform: none;
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .container {
+                border: 3px solid #95c11e;
+                background: rgba(0, 0, 0, 0.9);
+            }
+
+            .btn {
+                border-width: 3px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="overlay"></div>
+<div class="container">
+    <!-- Thymeleaf: Use @{...} for context-relative URLs -->
+    <img th:src="@{/logo1.png}" alt="FitFuel Logo" class="logo">
+    <h1>Welcome to <span class="brand">FitFuel</span></h1>
+    <p>Your personal meal and calorie tracker.</p>
+    <p class="quote">"Fuel your body, fuel your goals."</p>
+    <div class="btn-group">
+        <!-- Thymeleaf: Use @{...} for links -->
+        <a th:href="@{/login}" class="btn">Login</a>
+        <a th:href="@{/register}" class="btn btn-secondary">Register</a>
+    </div>
+</div>
+</body>
+</html>

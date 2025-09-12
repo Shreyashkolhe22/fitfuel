@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitFuel - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Montserrat", sans-serif;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: #000;
+            color: #fff;
+            position: relative;
+        }
+
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: -1;
+        }
+
+        /* Custom Cursor - Hide on mobile */
+        #cursor {
+            height: 20px;
+            width: 20px;
+            background-color: #95c11e;
+            border-radius: 50%;
+            position: fixed;
+            z-index: 99;
+            transition: all linear 0.1s;
+            pointer-events: none;
+            display: none;
+        }
+
+        #cursor-blur {
+            height: 400px;
+            width: 400px;
+            background-color: rgba(149, 193, 30, 0.2);
+            border-radius: 50%;
+            position: fixed;
+            filter: blur(60px);
+            z-index: 9;
+            transition: all linear 0.4s;
+            pointer-events: none;
+            display: none;
+        }
+
+        /* Navigation */
+        #nav {
+            height: 90px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            position: fixed;
+            top: 0;
+            z-index: 99;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            transition: all ease 0.3s;
+        }
+
+        #nav img {
+            height: 60px;
+            width: auto;
+        }
+
+        .back-home {
+            margin-left: auto;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            border: 2px solid #95c11e;
+            border-radius: 25px;
+            transition: all ease 0.3s;
+            text-transform: uppercase;
+            font-size: clamp(12px, 2.5vw, 14px);
+            white-space: nowrap;
+        }
+
+        .back-home:hover {
+            background: #95c11e;
+            color: #000;
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .login-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 20px 20px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 50px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            transition: all ease 0.3s;
+        }
+
+        .login-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px rgba(149, 193, 30, 0.2);
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-header h1 {
+            font-size: clamp(36px, 8vw, 48px);
+            font-weight: 900;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .form-header h1::before {
+            content: "LOGIN";
+            position: absolute;
+            color: #000;
+            top: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+            -webkit-text-stroke: 1.5px #95c11e;
+            z-index: -1;
+        }
+
+        .form-header p {
+            font-size: clamp(14px, 3vw, 16px);
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            line-height: 1.4;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #95c11e;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-size: clamp(12px, 2.5vw, 14px);
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            font-size: clamp(14px, 3vw, 16px);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transition: all ease 0.3s;
+            font-weight: 500;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #95c11e;
+            background: rgba(149, 193, 30, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(149, 193, 30, 0.2);
+        }
+
+        .form-input.error {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #95c11e, #7da018);
+            color: #000;
+            border: none;
+            padding: 18px 20px;
+            border-radius: 10px;
+            font-size: clamp(16px, 3vw, 18px);
+            font-weight: 800;
+            cursor: pointer;
+            transition: all ease 0.3s;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(149, 193, 30, 0.4);
+            background: linear-gradient(135deg, #a8d424, #95c11e);
+        }
+
+        .login-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .signup-link {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: clamp(12px, 2.5vw, 14px);
+            font-weight: 500;
+        }
+
+        .signup-link a {
+            color: #95c11e;
+            text-decoration: none;
+            font-weight: 700;
+            transition: all ease 0.3s;
+        }
+
+        .signup-link a:hover {
+            color: #fff;
+            text-shadow: 0 0 10px #95c11e;
+        }
+
+        /* Floating Elements */
+        .floating-element {
+            position: absolute;
+            background: rgba(149, 193, 30, 0.1);
+            border: 1px solid rgba(149, 193, 30, 0.3);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-element:nth-child(1) {
+            top: 20%;
+            left: 10%;
+            width: 60px;
+            height: 60px;
+            animation-delay: 0s;
+        }
+
+        .floating-element:nth-child(2) {
+            top: 60%;
+            right: 15%;
+            width: 80px;
+            height: 80px;
+            animation-delay: 2s;
+        }
+
+        .floating-element:nth-child(3) {
+            bottom: 20%;
+            left: 20%;
+            width: 40px;
+            height: 40px;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        /* Error Message Styles */
+        .error-message {
+            background: rgba(255, 107, 107, 0.15);
+            border: 1px solid rgba(255, 107, 107, 0.4);
+            color: #ff6b6b;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: clamp(12px, 2.5vw, 14px);
+            font-weight: 500;
+            display: none;
+            animation: slideInDown 0.3s ease-out;
+            text-align: center;
+            position: relative;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .error-message::before {
+            content: "⚠️";
+            margin-right: 8px;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Success Message */
+        .success-message {
+            background: rgba(149, 193, 30, 0.15);
+            border: 1px solid rgba(149, 193, 30, 0.4);
+            color: #95c11e;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: clamp(12px, 2.5vw, 14px);
+            font-weight: 500;
+            display: none;
+            animation: slideInDown 0.3s ease-out;
+            text-align: center;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Field Error Styles */
+        .field-error {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+            min-height: 18px;
+            opacity: 0;
+            transform: translateY(-5px);
+            transition: all 0.3s ease;
+        }
+
+        .field-error.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Loading Animation */
+        .loading-spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top: 2px solid #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+        }
+
+        .login-btn.loading .btn-text {
+            opacity: 0.7;
+        }
+
+        .login-btn.loading .loading-spinner {
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (min-width: 769px) {
+            #cursor, #cursor-blur {
+                display: block;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #nav {
+                height: 70px;
+                padding: 0 20px;
+            }
+
+            #nav img {
+                height: 80px;
+            }
+
+            .login-container {
+                padding: 90px 15px 20px;
+            }
+
+            .login-card {
+                padding: 30px 25px;
+                margin: 0 5px;
+                border-radius: 15px;
+            }
+
+            .form-header {
+                margin-bottom: 30px;
+            }
+
+            .form-group {
+                margin-bottom: 20px;
+            }
+
+            .form-input {
+                padding: 12px 16px;
+            }
+
+            .login-btn {
+                padding: 16px 20px;
+                min-height: 52px;
+            }
+
+            .floating-element {
+                display: none;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 80px 10px 15px;
+            }
+
+            .login-card {
+                padding: 25px 20px;
+                border-radius: 12px;
+            }
+
+            .form-header {
+                margin-bottom: 25px;
+            }
+
+            .form-input {
+                padding: 10px 14px;
+            }
+
+            .login-btn {
+                padding: 14px 18px;
+                min-height: 48px;
+            }
+
+            .back-home {
+                padding: 6px 12px;
+            }
+            #nav img {
+                height: 80px;
+            }
+        }
+
+        /* Landscape mobile */
+        @media (max-height: 600px) and (orientation: landscape) {
+            .login-container {
+                padding: 80px 20px 10px;
+            }
+
+            .login-card {
+                padding: 20px;
+            }
+
+            .form-header {
+                margin-bottom: 20px;
+            }
+
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            .floating-element {
+                display: none;
+            }
+            #nav img {
+                height: 80px;
+            }
+        }
+
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+
+            .floating-element {
+                animation: none;
+            }
+        }
+
+        /* High contrast mode */
+        @media (prefers-contrast: high) {
+            .login-card {
+                border: 2px solid #95c11e;
+                background: rgba(0, 0, 0, 0.9);
+            }
+
+            .form-input {
+                border-width: 2px;
+            }
+
+            .error-message {
+                border-width: 2px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- Overlay -->
+<div class="overlay"></div>
+<!-- Custom Cursors -->
+<div id="cursor"></div>
+<div id="cursor-blur"></div>
+<!-- Floating Elements -->
+<div class="floating-element"></div>
+<div class="floating-element"></div>
+<div class="floating-element"></div>
+<!-- Navigation -->
+<nav id="nav">
+    <!-- Thymeleaf: Use @{...} for context-relative URLs -->
+    <img th:src="@{/logo1.png}" alt="FitFuel Logo">
+    <a th:href="@{/}" class="back-home">← Back to Home</a>
+</nav>
+<!-- Main Container -->
+<div class="login-container">
+    <div class="login-card">
+        <div class="form-header">
+            <h1>LOGIN</h1>
+            <p>Enter your credentials to fuel your fitness journey</p>
+        </div>
+
+        <!-- Success Message (for registration success, etc.) -->
+        <div class="success-message" id="successMessage" th:if="${successMessage}" th:text="${successMessage}">
+            Registration successful! Please log in.
+        </div>
+
+        <!-- Error Message -->
+        <div class="error-message" id="errorMessage" th:if="${error}">
+            <span th:text="${error}">Invalid email or password. Please try again.</span>
+        </div>
+
+        <!-- Thymeleaf: Use th:action for form submission -->
+        <form th:action="@{/login}" method="post" id="loginForm" novalidate>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       class="form-input"
+                       required
+                       placeholder="Enter your email"
+                       th:value="${email}"
+                       autocomplete="email">
+                <div class="field-error" id="emailError"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       class="form-input"
+                       required
+                       placeholder="Enter your password"
+                       autocomplete="current-password">
+                <div class="field-error" id="passwordError"></div>
+            </div>
+
+            <button type="submit" class="login-btn" id="loginBtn">
+                <span class="btn-text">Sign In</span>
+                <div class="loading-spinner"></div>
+            </button>
+        </form>
+
+        <div class="signup-link">
+            Don't have an account? <a th:href="@{/register}">Sign up here</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Custom Cursor (only for desktop)
+    if (window.innerWidth > 768) {
+        const cursor = document.querySelector("#cursor");
+        const cursorBlur = document.querySelector("#cursor-blur");
+
+        document.addEventListener("mousemove", function (e) {
+            cursor.style.left = e.x + "px";
+            cursor.style.top = e.y + "px";
+            cursorBlur.style.left = e.x - 200 + "px";
+            cursorBlur.style.top = e.y - 200 + "px";
+        });
+
+        // Enhanced cursor effects
+        const interactiveElements = document.querySelectorAll("input, button, a");
+        interactiveElements.forEach(function (elem) {
+            elem.addEventListener("mouseenter", function () {
+                cursor.style.scale = "3";
+                cursor.style.border = "1px solid #fff";
+                cursor.style.backgroundColor = "transparent";
+            });
+            elem.addEventListener("mouseleave", function () {
+                cursor.style.scale = "1";
+                cursor.style.border = "0px solid #95C11E";
+                cursor.style.backgroundColor = "#95C11E";
+            });
+        });
+    }
+
+    // Form handling with enhanced error management
+    const loginForm = document.getElementById('loginForm');
+    const loginBtn = document.getElementById('loginBtn');
+    const errorMessage = document.getElementById('errorMessage');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    // Real-time validation
+    emailInput.addEventListener('input', function() {
+        validateEmail(this);
+        clearError();
+    });
+
+    passwordInput.addEventListener('input', function() {
+        validatePassword(this);
+        clearError();
+    });
+
+    // Form submission
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        // Clear previous errors
+        clearError();
+        clearFieldErrors();
+
+        // Validate inputs
+        let isValid = true;
+
+        if (!email) {
+            showFieldError('emailError', 'Email is required');
+            emailInput.classList.add('error');
+            isValid = false;
+        } else if (!validateEmail(emailInput)) {
+            isValid = false;
+        }
+
+        if (!password) {
+            showFieldError('passwordError', 'Password is required');
+            passwordInput.classList.add('error');
+            isValid = false;
+        } else if (!validatePassword(passwordInput)) {
+            isValid = false;
+        }
+
+        if (!isValid) {
+            showError('Please correct the errors above');
+            return;
+        }
+
+        // Show loading state
+        setLoadingState(true);
+
+        // Simulate form submission (remove this in production)
+        setTimeout(() => {
+            // This is just for demo - in real implementation, the form will submit
+            // and the server will handle authentication and redirect/error display
+            loginForm.submit();
+        }, 500);
+    });
+
+    // Validation functions
+    function validateEmail(input) {
+        const email = input.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!email) {
+            showFieldError('emailError', 'Email is required');
+            input.classList.add('error');
+            return false;
+        } else if (!emailRegex.test(email)) {
+            showFieldError('emailError', 'Please enter a valid email address');
+            input.classList.add('error');
+            return false;
+        } else {
+            clearFieldError('emailError');
+            input.classList.remove('error');
+            return true;
+        }
+    }
+
+    function validatePassword(input) {
+        const password = input.value;
+
+        if (!password) {
+            showFieldError('passwordError', 'Password is required');
+            input.classList.add('error');
+            return false;
+        } else if (password.length < 4) {
+            showFieldError('passwordError', 'Password must be at least 4 characters');
+            input.classList.add('error');
+            return false;
+        } else {
+            clearFieldError('passwordError');
+            input.classList.remove('error');
+            return true;
+        }
+    }
+
+    // Error handling functions
+    function showError(message) {
+        if (errorMessage) {
+            errorMessage.innerHTML = `⚠️ ${message}`;
+            errorMessage.classList.add('show');
+
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                clearError();
+            }, 5000);
+        }
+    }
+
+    function clearError() {
+        if (errorMessage) {
+            errorMessage.classList.remove('show');
+        }
+    }
+
+    function showFieldError(fieldId, message) {
+        const errorDiv = document.getElementById(fieldId);
+        if (errorDiv) {
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+    }
+
+    function clearFieldError(fieldId) {
+        const errorDiv = document.getElementById(fieldId);
+        if (errorDiv) {
+            errorDiv.textContent = '';
+            errorDiv.classList.remove('show');
+        }
+    }
+
+    function clearFieldErrors() {
+        clearFieldError('emailError');
+        clearFieldError('passwordError');
+        emailInput.classList.remove('error');
+        passwordInput.classList.remove('error');
+    }
+
+    function setLoadingState(loading) {
+        if (loading) {
+            loginBtn.classList.add('loading');
+            loginBtn.disabled = true;
+        } else {
+            loginBtn.classList.remove('loading');
+            loginBtn.disabled = false;
+        }
+    }
+
+    // Input animations
+    document.querySelectorAll('.form-input').forEach(input => {
+        input.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'translateY(-2px)';
+        });
+        input.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'translateY(0)';
+        });
+    });
+
+    // Navigation scroll effect
+    window.addEventListener('scroll', function() {
+        const nav = document.getElementById('nav');
+        if (window.scrollY > 50) {
+            nav.style.background = 'rgba(0, 0, 0, 0.9)';
+            nav.style.backdropFilter = 'blur(20px)';
+        } else {
+            nav.style.background = 'rgba(0, 0, 0, 0.5)';
+            nav.style.backdropFilter = 'blur(10px)';
+        }
+    });
+
+    // Parallax effect for floating elements (desktop only)
+    if (window.innerWidth > 768) {
+        window.addEventListener('mousemove', function(e) {
+            const elements = document.querySelectorAll('.floating-element');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            elements.forEach((element, index) => {
+                const speed = (index + 1) * 0.5;
+                element.style.transform = `translate(${x * speed * 50}px, ${y * speed * 50}px)`;
+            });
+        });
+    }
+
+    // Show success message if present
+    const successMessage = document.getElementById('successMessage');
+    if (successMessage && successMessage.textContent.trim()) {
+        successMessage.classList.add('show');
+        setTimeout(() => {
+            successMessage.classList.remove('show');
+        }, 5000);
+    }
+
+    // Show error message if present (from server)
+    if (errorMessage && errorMessage.textContent.trim()) {
+        errorMessage.classList.add('show');
+    }
+</script>
+</body>
+</html>

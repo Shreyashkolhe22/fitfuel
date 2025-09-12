@@ -95,15 +95,6 @@ public class UserController {
         return "nutrition-summary";
     }
 
-    @GetMapping("/add-recipe-collection")
-    public String addRecipeCollection(HttpSession session, Model model) {
-        User user = (User) session.getAttribute("loggedInUser");
-        if (user == null) {
-            return "redirect:/login";
-        }
-        model.addAttribute("user", user);
-        return "add-recipe-collection";
-    }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
